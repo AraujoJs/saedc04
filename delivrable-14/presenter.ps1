@@ -1,3 +1,38 @@
+[xml]$XML = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="MainWindow" x:Name="Window" Height="450" Width="800">
+    
+    <Grid HorizontalAlignment="Left" Width="800">
+      <Menu>
+        <MenuItem Header="Main">
+          <MenuItem x:Name="MenuConnect" Header="Connect" InputGestureText="CTRL+L" />
+          <MenuItem x:Name="MenuExit" Header="Exit" InputGestureText="CTRL+X" />
+        </MenuItem>
+        
+         <MenuItem Header="Operations">
+          <MenuItem x:Name="MenuStart" Header="Start" InputGestureText="CTRL+S" />
+          <MenuItem x:Name="MenuStop" Header="Stop" InputGestureText="CTRL+F" />
+          <MenuItem x:Name="MenuClone" Header="Clone" InputGestureText="CTRL+C" />
+        </MenuItem>
+        
+        <MenuItem Header="Reports">
+          <MenuItem x:Name="MenuStorage" Header="Storage" InputGestureText="CTRL+R+S" />
+          <MenuItem x:Name="MenuReport" Header="Report" InputGestureText="CTRL+R" />
+        </MenuItem>
+        
+        <MenuItem Header="About">
+          <MenuItem x:Name="MenuHelp" Header="Help" InputGestureText="CTRL+H" />
+          <MenuItem x:Name="MenuAbout" Header="About" InputGestureText="CTRL+A" />
+        </MenuItem>
+      </Menu>
+    </Grid>
+
+</Window>
+"@
+
+
+
 $proxmoxHost = "10.1.15.75:8006"
 $proxmoxUser = "root@pam"
 $proxmoxPassword = "Tatadc26"
@@ -6,6 +41,14 @@ $SecurePassword = ConvertTo-SecureString $proxmoxPassword -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential($proxmoxUser, $SecurePassword)
 
 $TicketObj = Connect-PveCluster -HostsAndPorts $proxmoxHost -Credentials $Credential -SkipCertificateCheck
+
+function pveGUI {
+    $FormXML = (New-Object System.Xml.XmlNodeReader $XML)
+    $Window = [Windows.Markup.XamlReader]::Load($FormXML)
+
+    $Window.ShowDialog() | Out-Null
+}
+
 
 function pveClone {
     param (
@@ -92,49 +135,7 @@ function pveStop {
     Stop-PveVM -Vmid $vmid
 }
 
-do {
-    Write-Host "-=-=-=- MENU -=-=-=-"
-    Write-Host "1) -- Clone VM"
-    Write-Host "2) -- Start VM"
-    Write-Host "3) -- Stop VM"
-    Write-Host "4) -- Generate Report"
-    Write-Host "5) - Exit"
-    $choice = Read-Host "Choose an option"
 
-    switch ($choice) {
-        1 {
-            $vmidSource = [int](Read-Host "Enter source VMID")
-            $vmidClone = [int](Read-Host "Enter new VMID")
-            $cloneName = Read-Host "Enter new VM name"
-            $cloneDesc = Read-Host "Enter VM description"
-            $password = Read-Host "Enter VM password"
-            $ip = Read-Host "Enter VM IP address (ex 10.98.10.50)"
-            $mask = [int](Read-Host "Enter subnet mask (ex 24)")
-            $gateway = Read-Host "Enter gateway (ex 10.98.10.254)"
-            
-            $vlanInput = Read-Host "Enter VLAN (10,20,30,40) or leave empty"
-            if ([string]::IsNullOrWhiteSpace($vlanInput)) {
-                $vlan = $null
-            }
-            else {
-                $vlan = [int]$vlanInput
-            }
+pveGUI
 
-            pveClone -vmidSource $vmidSource -vmidClone $vmidClone -cloneName $cloneName `
-                     -cloneDesc $cloneDesc -password $password -ip $ip -mask $mask -gateway $gateway -vlan $vlan
-        }
-        2 {
-            $vmid = [int](Read-Host "Enter VMID to start")
-            pveStart -vmid $vmid
-        }
-        3 {
-            $vmid = [int](Read-Host "Enter VMID to stop")
-            pveStop -vmid $vmid
-        }
-        4 {
-            pveReport
-        }
-        5 { exit }
-        default { Write-Host "Invalid choice" }
-    }
-} while ($true)
+

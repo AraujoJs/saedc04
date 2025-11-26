@@ -1,0 +1,30 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="MainWindow" x:Name="Window" Height="450" Width="800">
+    
+    <Grid HorizontalAlignment="Left" Width="800">
+      <Menu>
+        <MenuItem Header="Main">
+          <MenuItem x:Name="MenuConnect" Header="Connect" InputGestureText="CTRL+L" />
+          <MenuItem x:Name="MenuExit" Header="Exit" InputGestureText="CTRL+X" />
+        </MenuItem>
+        
+         <MenuItem Header="Operations">
+          <MenuItem x:Name="MenuStart" Header="Start" InputGestureText="CTRL+S" />
+          <MenuItem x:Name="MenuStop" Header="Stop" InputGestureText="CTRL+F" />
+          <MenuItem x:Name="MenuClone" Header="Clone" InputGestureText="CTRL+C" />
+        </MenuItem>
+        
+        <MenuItem Header="Reports">
+          <MenuItem x:Name="MenuStorage" Header="Storage" InputGestureText="CTRL+R+S" />
+          <MenuItem x:Name="MenuReport" Header="Report" InputGestureText="CTRL+R" />
+        </MenuItem>
+        
+        <MenuItem Header="About">
+          <MenuItem x:Name="MenuHelp" Header="Help" InputGestureText="CTRL+H" />
+          <MenuItem x:Name="MenuAbout" Header="About" InputGestureText="CTRL+A" />
+        </MenuItem>
+      </Menu>
+    </Grid>
+
+</Window>
